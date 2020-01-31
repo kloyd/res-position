@@ -49,7 +49,24 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
   $profile_id = $pdo->lastInsertId();
 
   // Insert the position entries.
+  $rank = 1;
+  for($i=1; $i<=9; $i++) {
+    if (!isset($_POST['year'.$i])) continue;
+    if (!isset($_POST['desc'.$i])) continue;
+    $year = $_POST['year'.$i];
+    $desc = $_POST['desc'.$i];
 
+    $stmt = $pdo->prepare('INSERT INTO position
+          (profile_id, rank, year, description)
+          VALUES ( :pid, :rank, :year, :desc)');
+    $stmt->execute(array(
+      ':pid' => $profile_id,
+      ':rank' => $rank,
+      ':year' => $year,
+      ':desc' => $desc)
+    );
+    $rank++;
+  }
   // now redirect to view.php
   $_SESSION['success'] = "New Profile added";
   header('Location: index.php');
