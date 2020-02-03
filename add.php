@@ -15,6 +15,12 @@ if ( isset($_SESSION['name'])) {
   die('Not logged in.');
 }
 
+if ( isset($_POST['cancel'] ) ) {
+    // cancel sends back to index
+    header("Location: index.php");
+    return;
+}
+
 if ( isset($_POST['first_name']) && isset($_POST['last_name'])
     && isset($_POST['email']) && isset($_POST['headline'])
     && isset($_POST['summary'])) {
