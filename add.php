@@ -13,6 +13,7 @@ if ( isset($_SESSION['name'])) {
   $name = $_SESSION['name'];
 } else {
   die('Not logged in.');
+  return;
 }
 
 if ( isset($_POST['cancel'] ) ) {
