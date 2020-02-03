@@ -112,7 +112,7 @@ $(document).ready(function(){
   window.console && console.log('Document ready called.');
   $('#addPos').click(function(event){
     event.preventDefault();
-    if (contPos >= 9) {
+    if (countPos >= 9) {
       alert("Maximum of nine position entries exceeded");
       return;
     }
@@ -122,12 +122,13 @@ $(document).ready(function(){
       '<div id="position'+countPos+'"> \
       <p>Year: <input type="text" name="year'+countPos+'" value="" /> \
       <input type="button" value="-" \
-          onclick="$(\'#position'+countPos+'\'').remove();return false;"></p> \
-      <textarea name="desc'+countPos'" rows="8" cols="80"></textarea> \
+          onclick="$(\'#position'+countPos+'\').remove();return false;"></p> \
+      <textarea name="desc'+countPos+'" rows="8" cols="80"></textarea> \
       </div>');
-    )
-  }
-})
+    });
+});
+
+</script>
 
 </body>
 </html>
