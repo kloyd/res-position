@@ -1,5 +1,7 @@
 <?php
 require_once "pdo.php";
+require_once "util.php";
+
 session_start();
 
 // Guardian: Make sure that profile_id is present
@@ -18,11 +20,10 @@ if ( $row === false ) {
     return;
 }
 
+$positions = loadPos($pdo, $_REQUEST['profile_id']);
+
 // Flash pattern
-if ( isset($_SESSION['error']) ) {
-    echo '<p style="color:red">'.$_SESSION['error']."</p>\n";
-    unset($_SESSION['error']);
-}
+flashMessages();
 
 $fn = htmlentities($row['first_name']);
 $ln = htmlentities($row['last_name']);
@@ -32,7 +33,7 @@ $su = htmlentities($row['summary']);
 $profile_id = $row['profile_id'];
 ?>
 <html><head>
-  <title>Kelly Loyd's Profile Edit</title>
+  <title>Kelly Loyd's Profile View</title>
   <?php require_once "head.php"; ?>
 </head>
 <body>
@@ -49,6 +50,12 @@ $profile_id = $row['profile_id'];
 <p>Summary:<br/>
 <?= $su ?><p>
 </p>
+<ul>
+  <?php foreach ($positions as $pos) { ?>
+  <li><?= $pos['year'] ?> - <?= $pos['description'] ?></li>
+<?php } ?>
+</ul>
+
 <a href="index.php">Done</a>
 </div>
 </body>

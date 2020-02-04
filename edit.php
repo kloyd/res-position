@@ -38,7 +38,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
 
         $stmt = $pdo->prepare('DELETE FROM position
             WHERE profile_id = :pid');
-        $stmt->execute(array(':pid' => $_REQUEST['profile_id']));
+        $stmt->execute(array(':pid' => $_POST['profile_id']));
         // Insert the position entries.
         $rank = 1;
         for($i=1; $i<=9; $i++) {
@@ -51,7 +51,7 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
                 (profile_id, rank, year, description)
                 VALUES ( :pid, :rank, :year, :desc)');
           $stmt->execute(array(
-            ':pid' => $profile_id,
+            ':pid' => $_POST['profile_id'],
             ':rank' => $rank,
             ':year' => $year,
             ':desc' => $desc)
@@ -121,12 +121,50 @@ $profile_id = $row['profile_id'];
   <input type="text" name="headline" size="80" value="<?= $he ?>"/></p>
   <p>Summary:<br/>
   <textarea name="summary" rows="8" cols="80"><?= $su ?></textarea>
+  <p>
+  Position: <input type="submit" id="addPos" value="+">
+  <div id="position_fields">
+    <?php $rank = 1;
+     foreach ($positions as $pos) { ?>
+    <div id="position<?= $rank ?>">
+      <p>Year: <input type="text" name="year<?= $rank ?>" value="<?= $pos['year'] ?>">
+      <input type="button" value="-" onclick="$('#position<?= $rank ?>').remove();return false;"></p>
+      <textarea name="desc<?= $rank ?>" rows="8" cols="80"><?= $pos['description'] ?></textarea>
+    </div>
+    <?php  $rank++;
+    } ?>
+  </div>
   <input type="hidden" name="profile_id" value="<?= $profile_id ?>">
   <p>
     <input type="submit" value="Save" />
     <a href="index.php">Cancel</a>
   </p>
 </form>
+<script>
+countPos = <?= $rank - 1?>;
+
+// http://stackoverflow.com/questions/17650776/add-remove-html-inside-div-using-javascript
+$(document).ready(function(){
+  window.console && console.log('Document ready called.');
+  $('#addPos').click(function(event){
+    event.preventDefault();
+    if (countPos >= 9) {
+      alert("Maximum of nine position entries exceeded");
+      return;
+    }
+    countPos++;
+    window.console && console.log("Adding position " + countPos);
+    $('#position_fields').append(
+      '<div id="position'+countPos+'"> \
+      <p>Year: <input type="text" name="year'+countPos+'" value="" /> \
+      <input type="button" value="-" \
+          onclick="$(\'#position'+countPos+'\').remove();return false;"></p> \
+      <textarea name="desc'+countPos+'" rows="8" cols="80"></textarea> \
+      </div>');
+    });
+});
+
+</script>
 
 
 </body>
