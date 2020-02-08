@@ -4,7 +4,6 @@ require_once "util.php";
 
 session_start();
 
-
 ?>
 
 <!DOCTYPE html>
@@ -14,9 +13,6 @@ session_start();
 <?php require_once "head.php"; ?>
 </head>
 <body>
-  <?php
-  flashMessages();
- ?>
 <div class="container">
 <h1>Kelly Loyd's Resume Registry</h1>
 <?php
