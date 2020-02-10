@@ -33,10 +33,34 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
         ':he' => $_POST['headline'],
         ':su' => $_POST['summary'],
         ':profile_id' => $_POST['profile_id']));
-          // now redirect to index.php
-          $_SESSION['success'] = "Profile updated";
-          header('Location: index.php');
-          return;
+
+        $stmt = $pdo->prepare('DELETE FROM position
+            WHERE profile_id = :pid');
+        $stmt->execute(array(':pid' => $_POST['profile_id']));
+        // Insert the position entries.
+        $rank = 1;
+        for($i=1; $i<=9; $i++) {
+          if (!isset($_POST['year'.$i])) continue;
+          if (!isset($_POST['desc'.$i])) continue;
+          $year = $_POST['year'.$i];
+          $desc = $_POST['desc'.$i];
+
+          $stmt = $pdo->prepare('INSERT INTO position
+                (profile_id, rank, year, description)
+                VALUES ( :pid, :rank, :year, :desc)');
+          $stmt->execute(array(
+            ':pid' => $_POST['profile_id'],
+            ':rank' => $rank,
+            ':year' => $year,
+            ':desc' => $desc)
+          );
+          $rank++;
+        }
+        // now redirect to index.php
+        $_SESSION['success'] = "Profile updated";
+        header('Location: index.php');
+        return;
+
     } else {
       $_SESSION['error'] = "email requires @ sign.";
       header("Location: edit.php?profile_id=".$_POST['profile_id']);
