@@ -1,9 +1,11 @@
 <?php
 require_once "pdo.php";
+require_once "util.php";
+
 session_start();
 
 if ( isset($_SESSION['name'])) {
-  $name = $_SESSION['name'];
+  $name = htmlentities($_SESSION['name']);
 } else {
   die('Not logged in');
 }
@@ -60,7 +62,6 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
         $_SESSION['success'] = "Profile updated";
         header('Location: index.php');
         return;
-
     } else {
       $_SESSION['error'] = "email requires @ sign.";
       header("Location: edit.php?profile_id=".$_POST['profile_id']);
@@ -84,6 +85,8 @@ if ( $row === false ) {
     return;
 }
 
+$positions = loadPos($pdo, $_REQUEST['profile_id']);
+
 // Flash pattern
 if ( isset($_SESSION['error']) ) {
     echo '<p style="color:red">'.$_SESSION['error']."</p>\n";
@@ -98,13 +101,15 @@ $su = htmlentities($row['summary']);
 $profile_id = $row['profile_id'];
 ?>
 
+<!DOCTYPE html>
 <html>
 <head>
 <title>Kelly Loyd's Profile Edit</title>
+<?php require_once "head.php"; ?>
 </head>
 <body>
   <div class="container">
-  <?php echo("<h1>Editing Profile for $name</h1>\n"); ?>
+  <h1>Editing Profile for <?= $name; ?></h1>
   <form method="post">
   <p>First Name:
   <input type="text" name="first_name" size="60" value="<?= $fn ?>"/></p>
@@ -116,12 +121,50 @@ $profile_id = $row['profile_id'];
   <input type="text" name="headline" size="80" value="<?= $he ?>"/></p>
   <p>Summary:<br/>
   <textarea name="summary" rows="8" cols="80"><?= $su ?></textarea>
+  <p>
+  Position: <input type="submit" id="addPos" value="+">
+  <div id="position_fields">
+    <?php $rank = 1;
+     foreach ($positions as $pos) { ?>
+    <div id="position<?= $rank ?>">
+      <p>Year: <input type="text" name="year<?= $rank ?>" value="<?= $pos['year'] ?>">
+      <input type="button" value="-" onclick="$('#position<?= $rank ?>').remove();return false;"></p>
+      <textarea name="desc<?= $rank ?>" rows="8" cols="80"><?= $pos['description'] ?></textarea>
+    </div>
+    <?php  $rank++;
+    } ?>
+  </div>
   <input type="hidden" name="profile_id" value="<?= $profile_id ?>">
   <p>
     <input type="submit" value="Save" />
     <a href="index.php">Cancel</a>
   </p>
 </form>
+<script>
+countPos = 0;
+
+// http://stackoverflow.com/questions/17650776/add-remove-html-inside-div-using-javascript
+$(document).ready(function(){
+  window.console && console.log('Document ready called.');
+  $('#addPos').click(function(event){
+    event.preventDefault();
+    if (countPos >= 9) {
+      alert("Maximum of nine position entries exceeded");
+      return;
+    }
+    countPos++;
+    window.console && console.log("Adding position " + countPos);
+    $('#position_fields').append(
+      '<div id="position'+countPos+'"> \
+      <p>Year: <input type="text" name="year'+countPos+'" value="" /> \
+      <input type="button" value="-" \
+          onclick="$(\'#position'+countPos+'\').remove();return false;"></p> \
+      <textarea name="desc'+countPos+'" rows="8" cols="80"></textarea> \
+      </div>');
+    });
+});
+
+</script>
 
 
 </body>
