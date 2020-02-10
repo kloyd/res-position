@@ -46,14 +46,3 @@ function validatePos() {
   }
   return true;
 }
-
-function loadPos($pdo, $profile_id) {
-  $stmt = $pdo->prepare('SELECT * from position
-    WHERE profile_id = :prof ORDER BY rank');
-  $stmt->execute(array( ':prof' => $profile_id));
-  $positions = array();
-  while ( $row = $stmt->fetch(PDO::FETCH_ASSOC) ) {
-    $positions[] = $row;
-  }
-  return $positions;
-}

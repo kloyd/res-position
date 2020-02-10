@@ -1,11 +1,9 @@
 <?php
 require_once "pdo.php";
-require_once "util.php";
-
 session_start();
 
 if ( isset($_SESSION['name'])) {
-  $name = htmlentities($_SESSION['name']);
+  $name = $_SESSION['name'];
 } else {
   die('Not logged in');
 }
@@ -35,33 +33,10 @@ if ( isset($_POST['first_name']) && isset($_POST['last_name'])
         ':he' => $_POST['headline'],
         ':su' => $_POST['summary'],
         ':profile_id' => $_POST['profile_id']));
-
-        $stmt = $pdo->prepare('DELETE FROM position
-            WHERE profile_id = :pid');
-        $stmt->execute(array(':pid' => $_REQUEST['profile_id']));
-        // Insert the position entries.
-        $rank = 1;
-        for($i=1; $i<=9; $i++) {
-          if (!isset($_POST['year'.$i])) continue;
-          if (!isset($_POST['desc'.$i])) continue;
-          $year = $_POST['year'.$i];
-          $desc = $_POST['desc'.$i];
-
-          $stmt = $pdo->prepare('INSERT INTO position
-                (profile_id, rank, year, description)
-                VALUES ( :pid, :rank, :year, :desc)');
-          $stmt->execute(array(
-            ':pid' => $profile_id,
-            ':rank' => $rank,
-            ':year' => $year,
-            ':desc' => $desc)
-          );
-          $rank++;
-        }
-        // now redirect to index.php
-        $_SESSION['success'] = "Profile updated";
-        header('Location: index.php');
-        return;
+          // now redirect to index.php
+          $_SESSION['success'] = "Profile updated";
+          header('Location: index.php');
+          return;
     } else {
       $_SESSION['error'] = "email requires @ sign.";
       header("Location: edit.php?profile_id=".$_POST['profile_id']);
@@ -85,8 +60,6 @@ if ( $row === false ) {
     return;
 }
 
-$positions = loadPos($pdo, $_REQUEST['profile_id']);
-
 // Flash pattern
 if ( isset($_SESSION['error']) ) {
     echo '<p style="color:red">'.$_SESSION['error']."</p>\n";
@@ -101,15 +74,13 @@ $su = htmlentities($row['summary']);
 $profile_id = $row['profile_id'];
 ?>
 
-<!DOCTYPE html>
 <html>
 <head>
 <title>Kelly Loyd's Profile Edit</title>
-<?php require_once "head.php"; ?>
 </head>
 <body>
   <div class="container">
-  <h1>Editing Profile for <?= $name; ?></h1>
+  <?php echo("<h1>Editing Profile for $name</h1>\n"); ?>
   <form method="post">
   <p>First Name:
   <input type="text" name="first_name" size="60" value="<?= $fn ?>"/></p>
